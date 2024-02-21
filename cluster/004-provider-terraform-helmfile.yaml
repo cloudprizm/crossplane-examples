@@ -12,6 +12,21 @@ releases:
             package: xpkg.upbound.io/upbound/provider-terraform:v0.10.0
             skipDependencyResolution: true
 
+  - name: crossplane-tf-provider-configs
+    chart: incubator/raw
+    wait: true
+    hooks:
+      - events: [ "postsync", "postapply" ]
+        command: "kubectl"
+        args:
+          [
+            "wait",
+            "providers.pkg.crossplane.io/provider-terraform-upbound",
+            "--for=condition=Healthy",
+            "--timeout=180s",
+          ]
+    values:
+      - resources:
         - apiVersion: tf.upbound.io/v1beta1
           kind: ProviderConfig
           metadata:

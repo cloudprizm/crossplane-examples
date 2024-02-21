@@ -27,11 +27,11 @@ spec:
       readinessChecks:
         - type: None
       patches:
-        - fromFieldPath: status.accountID
+        - fromFieldPath: spec.accountID
           toFieldPath: metadata.name
           policy:
             fromFieldPath: Required
-        - fromFieldPath: status.accountID
+        - fromFieldPath: spec.accountID
           toFieldPath: spec.subscriptionID
           policy:
             fromFieldPath: Required
@@ -47,7 +47,7 @@ spec:
           providerConfigRef:
             name:  # patched
       patches:
-        - fromFieldPath: status.accountID
+        - fromFieldPath: spec.accountID
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required

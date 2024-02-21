@@ -37,10 +37,10 @@ spec:
                   - {{ $cidr }}
                 resourceGroupNameSelector:
                   matchLabels:
-                    demo.io/resource-group-selector: {{ $metadataName }}
+                    demo.io/resource-group-selector: {{ $.observed.composite.resource.spec.resourceGroupSelector }}
                 virtualNetworkNameSelector:
                   matchLabels:
-                    demo.io/virtualnetwork-selector: {{ $metadataName }}
+                    demo.io/virtualnetwork-selector: {{ $.observed.composite.resource.spec.vnetSelector }}
               providerConfigRef:
                 name: {{ $subscriptionId }}
             

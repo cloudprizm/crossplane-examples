@@ -68,6 +68,9 @@ spec:
           name:  # patched
         spec:
           forProvider:
+            vars:
+              - key: peerNetworkName
+                value:  # patched
             source: Inline
             module: |
               provider "azresourcegraph" {
@@ -75,6 +78,8 @@ spec:
                 client_id     = var.clientId
                 client_secret = var.clientSecret
               }
+              
+              variable "peerNetworkName" {}
               
               variable "tenantId" {}
   
@@ -87,11 +92,10 @@ spec:
               }
               
               data "azresourcegraph_query" "get_peer_vnet" {
-                management_group_ids = ["fcp_connected_accounts"]
                 query                = <<QUERY
                 resources
                   | where type == "microsoft.network/virtualnetworks"
-                  | where name == "vnet"
+                  | where name == "${var.peerNetworkName}"
                   | project peerVNetId = id
                 QUERY
               }
@@ -109,6 +113,8 @@ spec:
           providerConfigRef:
             name: terraform-azure
       patches:
+        - fromFieldPath: spec.peerNetworkName
+          toFieldPath: spec.forProvider.vars[0].value
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.outputs.peerVnetId
           toFieldPath: status.peerVnetId
@@ -156,6 +162,8 @@ spec:
         spec:
           cidrs:  # parched
           subscriptionId:  # parched
+          resourceGroupSelector:  # parched
+          vnetSelector:  # parched
       patches:
         - fromFieldPath: spec.subnets
           toFieldPath: spec.cidrs
@@ -163,6 +171,14 @@ spec:
             fromFieldPath: Required
         - fromFieldPath: spec.accountId
           toFieldPath: spec.subscriptionId
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.resourceGroupSelector
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.vnetSelector
           policy:
             fromFieldPath: Required
     - name: virtualnetwork-peering

@@ -5,8 +5,9 @@ metadata:
   name: test-network
 spec:
   networkName: dafanet75
-  accountId: 6d6274da-b54b-4a0b-97a0-83c79699903b
+  accountId: fbdcbf8e-aaa1-4275-b745-f2812fb3d4f5
   cloudRegion: germanywestcentral
+  peerNetworkName: dafn1-gwc1
   subnets:
     - 44.115.88.176/28
     - 44.115.89.176/28

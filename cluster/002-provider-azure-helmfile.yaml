@@ -14,6 +14,16 @@ releases:
   - name: crossplane-provider-azure-network
     chart: incubator/raw
     wait: true
+    hooks:
+      - events: [ "postsync", "postapply" ]
+        command: "kubectl"
+        args:
+          [
+            "wait",
+            "providers.pkg.crossplane.io/provider-family-azure",
+            "--for=condition=Healthy",
+            "--timeout=180s",
+          ]
     values:
       - resources:
         - apiVersion: pkg.crossplane.io/v1
@@ -27,6 +37,16 @@ releases:
     chart: incubator/raw
     namespace: crossplane-system
     wait: true
+    hooks:
+      - events: [ "postsync", "postapply" ]
+        command: "kubectl"
+        args:
+          [
+            "wait",
+            "providers.pkg.crossplane.io/provider-azure-network",
+            "--for=condition=Healthy",
+            "--timeout=180s",
+          ]
     values:
       - resources:
         - apiVersion: v1

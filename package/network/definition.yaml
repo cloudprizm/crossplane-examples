@@ -30,12 +30,16 @@ spec:
                 - cloudRegion
                 - subnets
                 - accountId
+                - peerNetworkName
               properties:
                 accountId:
                   description: 'AccountId: Id of the Subscription/AWS account'
                   type: string
                 networkName:
                   description: 'NetworkName: will be used to create names of your resources'
+                  type: string
+                peerNetworkName:
+                  description: 'peerNetworkName: name of network to which your network will be peered'
                   type: string
                 cloudRegion:
                   description: 'CloudRegion: one of Azure/AWS regions possible values

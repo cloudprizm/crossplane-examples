@@ -28,6 +28,8 @@ spec:
               required:
                 - cidrs
                 - subscriptionId
+                - resourceGroupSelector
+                - vnetSelector
               properties:
                 cidrs:
                   description: 'cidrs: Subnets cidrs'
@@ -36,4 +38,10 @@ spec:
                     type: string
                 subscriptionId:
                   description: 'subscriptionId: Subnets subscription Id '
+                  type: string
+                resourceGroupSelector:
+                  description: 'resourceGroupSelector: Subnets selector for resource group'
+                  type: string
+                vnetSelector:
+                  description: 'subscriptionId: Subnets selector for vnet '
                   type: string

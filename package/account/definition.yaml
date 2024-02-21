@@ -26,8 +26,8 @@ spec:
             spec:
               type: object
               properties:
-                accountName:
-                  description: 'Account Name used to name your subscription/AWS account'
+                accountID:
+                  description: 'Account Id of subscription/AWS account'
                   type: string
                 accountType:
                   description: 'Account Type Possible values: standard, premium, enterprise'

@@ -1,0 +1,11 @@
+---
+apiVersion: demo.io/v1alpha1
+kind: Account
+metadata:
+  name: test-account
+spec:
+  accountName: dafa72
+  accountType: standard
+  compositionSelector:
+    matchLabels:
+      demo.io/cloud-provider: azure

@@ -1,0 +1,43 @@
+releases:
+  - name: crossplane-tf-provider
+    chart: incubator/raw
+    wait: true
+    values:
+      - resources:
+        - apiVersion: pkg.crossplane.io/v1
+          kind: Provider
+          metadata:
+            name: provider-terraform-upbound
+          spec:
+            package: xpkg.upbound.io/upbound/provider-terraform:v0.10.0
+            skipDependencyResolution: true
+
+        - apiVersion: tf.upbound.io/v1beta1
+          kind: ProviderConfig
+          metadata:
+            name: terraform-azure
+          spec:
+            credentials:
+              - filename: terraform.tfvars.json  # if this filename will be used vars will be mounted to terraform by default
+                source: Secret
+                secretRef:
+                  namespace: crossplane-system
+                  name: resource-creator
+                  key: credentials
+            configuration: |-
+              terraform {
+                backend "kubernetes" {
+                  secret_suffix     = "providerconfig-azure"
+                  namespace         = "crossplane-system"
+                  in_cluster_config = true
+                }
+                required_providers {
+                  azresourcegraph = {
+                    source  = "tiwood/azresourcegraph"
+                    version = "0.2.0"
+                  }
+                  azapi = {
+                    source = "azure/azapi"
+                  }
+                }
+              }

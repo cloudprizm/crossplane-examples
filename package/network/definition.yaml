@@ -1,0 +1,61 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xnetworks.demo.io
+spec:
+  group: demo.io
+  defaultCompositionRef:
+    name: xvnets.demo.io
+  names:
+    kind: XNetwork
+    plural: xnetworks
+    singular: xnetwork
+  claimNames:
+    kind: Network
+    plural: networks
+    singular: network
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required:
+                - networkName
+                - cloudRegion
+                - subnets
+                - accountId
+              properties:
+                accountId:
+                  description: 'AccountId: Id of the Subscription/AWS account'
+                  type: string
+                networkName:
+                  description: 'NetworkName: will be used to create names of your resources'
+                  type: string
+                cloudRegion:
+                  description: 'CloudRegion: one of Azure/AWS regions possible values
+                    values: "germanywestcentral" "westeurope"'
+                  type: string
+                  enum:
+                    - germanywestcentral
+                    - westeurope
+                    - eu-central-1
+                subnets:
+                  description: 'Subnets cidrs'
+                  type: array
+                  items:
+                    type: string
+            status:
+              type: object
+              properties:
+                peerVnetId:
+                  description: 'peerVnetId: Id of the Peered Vnet'
+                  type: string
+                vnetId:
+                  description: 'vnetId: Id of the created Vnet'
+                  type: string

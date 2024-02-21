@@ -1,0 +1,26 @@
+releases:
+  - name: crossplane-functions
+    chart: incubator/raw
+    wait: true
+    values:
+      - resources:
+        - apiVersion: pkg.crossplane.io/v1beta1
+          kind: Function
+          metadata:
+            name: function-go-templating
+          spec:
+            package: xpkg.upbound.io/upbound/function-go-templating:v0.3.0
+
+        - apiVersion: pkg.crossplane.io/v1beta1
+          kind: Function
+          metadata:
+            name: function-auto-ready
+          spec:
+            package: xpkg.upbound.io/upbound/function-auto-ready:v0.2.1
+
+        - apiVersion: pkg.crossplane.io/v1beta1
+          kind: Function
+          metadata:
+            name: function-patch-and-transform
+          spec:
+            package: xpkg.upbound.io/upbound/function-patch-and-transform:v0.2.1

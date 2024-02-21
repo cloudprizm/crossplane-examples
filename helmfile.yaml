@@ -1,0 +1,4 @@
+helmfiles:
+  - path: "cluster/*-helmfile.yaml"
+    values:
+      - secrets.yaml

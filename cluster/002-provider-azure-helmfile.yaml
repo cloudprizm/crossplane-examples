@@ -1,0 +1,44 @@
+releases:
+  - name: crossplane-provider-azure
+    chart: incubator/raw
+    wait: true
+    values:
+      - resources:
+        - apiVersion: pkg.crossplane.io/v1
+          kind: Provider
+          metadata:
+            name: provider-family-azure
+          spec:
+            package: xpkg.upbound.io/upbound/provider-family-azure:v0.42.0
+
+  - name: crossplane-provider-azure-network
+    chart: incubator/raw
+    wait: true
+    values:
+      - resources:
+        - apiVersion: pkg.crossplane.io/v1
+          kind: Provider
+          metadata:
+            name: provider-azure-network
+          spec:
+            package: xpkg.upbound.io/upbound/provider-azure-network:v0.42.0
+
+  - name: provider-configs-azure
+    chart: incubator/raw
+    namespace: crossplane-system
+    wait: true
+    values:
+      - resources:
+        - apiVersion: v1
+          kind: Secret
+          metadata:
+            name: resource-creator
+          type: Opaque
+          stringData:
+            "credentials": |-
+              {
+               "clientId": {{ .Values.resourceCreator.clientId | quote }},
+               "clientSecret": {{ .Values.resourceCreator.clientSecret | quote }},
+               "tenantId": {{ .Values.resourceCreator.tenantId | quote }},
+               "subscriptionId": {{ .Values.resourceCreator.subscriptionId | quote }}
+              }

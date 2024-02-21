@@ -1,0 +1,53 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xsubscriptions.demo.io
+  labels:
+    demo.io/cloud-provider: azure
+spec:
+  compositeTypeRef:
+    apiVersion: demo.io/v1alpha1
+    kind: XAccount
+  resources:
+    - name: customer-provider
+      base:
+        apiVersion: azure.upbound.io/v1beta1
+        kind: ProviderConfig
+        metadata:
+          name:  # patched
+        spec:
+          credentials:
+            source: Secret
+            secretRef:
+              namespace: crossplane-system
+              name: resource-creator
+              key: credentials
+          subscriptionID:  # patched
+      readinessChecks:
+        - type: None
+      patches:
+        - fromFieldPath: status.accountID
+          toFieldPath: metadata.name
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: status.accountID
+          toFieldPath: spec.subscriptionID
+          policy:
+            fromFieldPath: Required
+    - name: register-provider
+      base:
+        apiVersion: azure.upbound.io/v1beta1
+        kind: ResourceProviderRegistration
+        metadata:
+          name:  # patched
+        spec:
+          forProvider:
+            name: Microsoft.Network
+          providerConfigRef:
+            name:  # patched
+      patches:
+        - fromFieldPath: status.accountID
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+            fromFieldPath: Required

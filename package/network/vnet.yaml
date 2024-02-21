@@ -1,0 +1,203 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xvnets.demo.io
+  labels:
+    demo.io/cloud-provider: azure
+spec:
+  compositeTypeRef:
+    apiVersion: demo.io/v1alpha1
+    kind: XNetwork
+  patchSets:
+    - name: provider-config
+      patches:
+        - fromFieldPath: spec.accountId
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+            fromFieldPath: Required
+    - name: net-name
+      patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.networkName
+              - fromFieldPath: spec.cloudRegion
+            strategy: string
+            string: # rg-d-gwc1-my-rgp-networking
+              fmt: net-%s-%s
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
+          policy:
+            fromFieldPath: Required
+    - name: location
+      patches:
+        - fromFieldPath: spec.cloudRegion
+          toFieldPath: spec.forProvider.location
+          policy:
+            fromFieldPath: Required
+  resources:
+    - name: network-resourcegroup
+      base:
+        apiVersion: azure.upbound.io/v1beta1
+        kind: ResourceGroup
+        metadata:
+          name:  # patched
+          labels:
+            demo.io/resource-group-selector:  # patched
+        spec:
+          forProvider:
+            location:  # patched
+        providerConfigRef:
+          name:  # patched
+      patches:
+        - type: PatchSet
+          patchSetName: net-name
+        - type: PatchSet
+          patchSetName: provider-config
+        - type: PatchSet
+          patchSetName: location
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.labels[demo.io/resource-group-selector]
+          policy:
+            fromFieldPath: Required
+    - name: peering
+      base:
+        apiVersion: tf.upbound.io/v1beta1
+        kind: Workspace
+        metadata:
+          name:  # patched
+        spec:
+          forProvider:
+            source: Inline
+            module: |
+              provider "azresourcegraph" {
+                tenant_id     = var.tenantId
+                client_id     = var.clientId
+                client_secret = var.clientSecret
+              }
+              
+              variable "tenantId" {}
+  
+              variable "clientId" {}
+              
+              variable "clientSecret" {}
+              
+              locals {
+                peer_vnet_id = jsondecode(data.azresourcegraph_query.get_peer_vnet.result)[0].peerVNetId
+              }
+              
+              data "azresourcegraph_query" "get_peer_vnet" {
+                management_group_ids = ["fcp_connected_accounts"]
+                query                = <<QUERY
+                resources
+                  | where type == "microsoft.network/virtualnetworks"
+                  | where name == "vnet"
+                  | project peerVNetId = id
+                QUERY
+              }
+              
+              output "peerVnetId" {
+                value = local.peer_vnet_id
+              }
+            varFiles:
+              - source: SecretKey
+                secretKeyRef:
+                  namespace: crossplane-system
+                  name: resource-creator
+                  key: credentials
+                format: JSON
+          providerConfigRef:
+            name: terraform-azure
+      patches:
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.outputs.peerVnetId
+          toFieldPath: status.peerVnetId
+    - name: virtual-network
+      base:
+        apiVersion: network.azure.upbound.io/v1beta1
+        kind: VirtualNetwork
+        metadata:
+          name:  # patched
+          labels:
+            demo.io/virtualnetwork-selector:  # patched
+        spec:
+          forProvider:
+            location:  # patched
+            addressSpace:  # patched
+            resourceGroupNameSelector:
+              matchLabels:
+                demo.io/resource-group-selector:  # patched
+        providerConfigRef:
+          name:  # patched
+      patches:
+        - type: PatchSet
+          patchSetName: net-name
+        - type: PatchSet
+          patchSetName: provider-config
+        - type: PatchSet
+          patchSetName: location
+        - fromFieldPath: spec.subnets
+          toFieldPath: spec.forProvider.addressSpace
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.forProvider.resourceGroupNameSelector.matchLabels[demo.io/resource-group-selector]
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.labels[demo.io/virtualnetwork-selector]  # vnet_name label
+          policy:
+            fromFieldPath: Required
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.id
+          toFieldPath: status.vnetId
+    - name: subnets
+      base:
+        apiVersion: demo.io/v1alpha1
+        kind: XSubnet
+        spec:
+          cidrs:  # parched
+          subscriptionId:  # parched
+      patches:
+        - fromFieldPath: spec.subnets
+          toFieldPath: spec.cidrs
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: spec.accountId
+          toFieldPath: spec.subscriptionId
+          policy:
+            fromFieldPath: Required
+    - name: virtualnetwork-peering
+      base:
+        apiVersion: network.azure.upbound.io/v1beta1
+        kind: VirtualNetworkPeering
+        metadata:
+          name:  # patched
+        spec:
+          forProvider:
+            allowForwardedTraffic: true
+            allowGatewayTransit: false
+            allowVirtualNetworkAccess: true
+            useRemoteGateways: false
+            resourceGroupNameSelector:
+              matchLabels:
+                demo.io/resource-group-selector:  # patched
+            virtualNetworkNameSelector:
+              matchLabels:
+                demo.io/virtualnetwork-selector:  # patched
+            remoteVirtualNetworkId:  # patched
+          providerConfigRef:
+            name:  # patched
+      patches:
+        - type: PatchSet
+          patchSetName: provider-config
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.forProvider.resourceGroupNameSelector.matchLabels[demo.io/resource-group-selector]
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.forProvider.resourceGroupNameSelector.virtualNetworkNameSelector[demo.io/virtualnetwork-selector]
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: status.peerVnetId
+          toFieldPath: spec.forProvider.remoteVirtualNetworkId
+          policy:
+            fromFieldPath: Required

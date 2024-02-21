@@ -1,0 +1,11 @@
+releases:
+  - namespace: crossplane-system
+    name: crossplane
+    chart: crossplane-stable/crossplane
+    version: 1.14.0
+    wait: true
+    values:
+      - installCRDs: true
+      - args:
+          - --enable-composition-webhook-schema-validation
+          - --enable-usages

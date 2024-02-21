@@ -1,0 +1,12 @@
+---
+apiVersion: demo.io/v1alpha1
+kind: Network
+metadata:
+  name: test-network
+spec:
+  networkName: dafanet75
+  accountId: 6d6274da-b54b-4a0b-97a0-83c79699903b
+  cloudRegion: germanywestcentral
+  subnets:
+    - 44.115.88.176/28
+    - 44.115.89.176/28

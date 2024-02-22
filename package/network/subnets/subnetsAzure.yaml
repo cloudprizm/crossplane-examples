@@ -23,14 +23,15 @@ spec:
             {{- $subscriptionId := index .observed.composite.resource.spec.subscriptionId }}
 
             {{- range $cidr := .observed.composite.resource.spec.cidrs }}
+            {{- $subnetName := printf "%s-%s" $metadataName $cidr | replace "/" "-" }}
             
             ---
             apiVersion: network.azure.upbound.io/v1beta1
             kind: Subnet
             metadata:
-              name: {{ printf "%s-%s" $metadataName $cidr | replace "/" "-" }}
+              name: {{ $subnetName }}
               annotations:  
-                gotemplating.fn.crossplane.io/composition-resource-name: subnets
+                gotemplating.fn.crossplane.io/composition-resource-name: {{ $subnetName }}
             spec:
               forProvider:
                 addressPrefixes:

@@ -63,3 +63,6 @@ spec:
                 vnetId:
                   description: 'vnetId: Id of the created Vnet'
                   type: string
+                rgpName:
+                  description: 'rgpName: Created rgp name'
+                  type: string

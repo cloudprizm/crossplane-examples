@@ -11,6 +11,18 @@ releases:
           spec:
             package: xpkg.upbound.io/upbound/provider-family-azure:v0.42.0
 
+  - name: crossplane-provider-azure-psql
+    chart: incubator/raw
+    wait: true
+    values:
+      - resources:
+        - apiVersion: pkg.crossplane.io/v1
+          kind: Provider
+          metadata:
+            name: provider-azure-sql
+          spec:
+            package: xpkg.upbound.io/upbound/provider-azure-sql:v0.42.1
+
   - name: crossplane-provider-azure-network
     chart: incubator/raw
     wait: true
@@ -62,3 +74,11 @@ releases:
                "tenantId": {{ .Values.resourceCreator.tenantId | quote }},
                "subscriptionId": {{ .Values.resourceCreator.subscriptionId | quote }}
               }
+
+        - apiVersion: v1
+          kind: Secret
+          metadata:
+            name: msql-secret
+          type: Opaque
+          stringData:
+            "credentials": {{ .Values.msqlSecret.secret | quote }}

@@ -24,7 +24,7 @@ spec:
               - fromFieldPath: spec.networkName
               - fromFieldPath: spec.cloudRegion
             strategy: string
-            string: # rg-d-gwc1-my-rgp-networking
+            string: # net-vnetn-germanywestcentral
               fmt: net-%s-%s
           toFieldPath: metadata.annotations[crossplane.io/external-name]
           policy:
@@ -36,6 +36,27 @@ spec:
           policy:
             fromFieldPath: Required
   resources:
+    - name: network-naming
+      base:
+        apiVersion: apiextensions.crossplane.io/v1alpha1
+        kind: EnvironmentConfig
+        metadata:
+          name:  # patched
+        data:
+          cloudRegion:  # patched
+      readinessChecks:
+        - type: None
+      patches:
+        - fromFieldPath: spec.cloudRegion
+          toFieldPath: data.cloudRegion
+          transforms:
+            - type: map
+              map:
+                germanywestcentral: gwc1
+                westeurope: we1
+        - type: ToCompositeFieldPath
+          fromFieldPath: data.cloudRegion
+          toFieldPath: metadata.annotations[cloudRegionShort]
     - name: network-resourcegroup
       base:
         apiVersion: azure.upbound.io/v1beta1
@@ -47,8 +68,8 @@ spec:
         spec:
           forProvider:
             location:  # patched
-        providerConfigRef:
-          name:  # patched
+          providerConfigRef:
+            name:  # patched
       patches:
         - type: PatchSet
           patchSetName: net-name
@@ -60,6 +81,9 @@ spec:
           toFieldPath: metadata.labels[demo.io/resource-group-selector]
           policy:
             fromFieldPath: Required
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.annotations[crossplane.io/external-name]
+          toFieldPath: status.rgpName
     - name: peering
       base:
         apiVersion: tf.upbound.io/v1beta1
@@ -126,6 +150,8 @@ spec:
           name:  # patched
           labels:
             demo.io/virtualnetwork-selector:  # patched
+          annotations:
+            crossplane.io/external-name:  # patched
         spec:
           forProvider:
             location:  # patched
@@ -136,8 +162,17 @@ spec:
         providerConfigRef:
           name:  # patched
       patches:
-        - type: PatchSet
-          patchSetName: net-name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.networkName
+              - fromFieldPath: metadata.annotations[cloudRegionShort]
+            strategy: string
+            string: # net-vnetn-germanywestcentral
+              fmt: net-%s-%s
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
+          policy:
+            fromFieldPath: Required
         - type: PatchSet
           patchSetName: provider-config
         - type: PatchSet

@@ -132,6 +132,32 @@ spec:
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.id
           toFieldPath: status.vnetId
+    - name: subnets
+      base:
+        apiVersion: demo.io/v1alpha1
+        kind: XSubnet
+        spec:
+          cidrs:  # parched
+          subscriptionId:  # parched
+          resourceGroupSelector:  # parched
+          vnetSelector:  # parched
+      patches:
+        - fromFieldPath: spec.subnets
+          toFieldPath: spec.cidrs
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: spec.subscriptionID
+          toFieldPath: spec.subscriptionId
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.resourceGroupSelector
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.vnetSelector
+          policy:
+            fromFieldPath: Required
     - name: peering
       base:
         apiVersion: tf.upbound.io/v1beta1
@@ -190,32 +216,6 @@ spec:
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.outputs.peerVnetId
           toFieldPath: status.peerVnetId
-    - name: subnets
-      base:
-        apiVersion: demo.io/v1alpha1
-        kind: XSubnet
-        spec:
-          cidrs:  # parched
-          subscriptionId:  # parched
-          resourceGroupSelector:  # parched
-          vnetSelector:  # parched
-      patches:
-        - fromFieldPath: spec.subnets
-          toFieldPath: spec.cidrs
-          policy:
-            fromFieldPath: Required
-        - fromFieldPath: spec.subscriptionID
-          toFieldPath: spec.subscriptionId
-          policy:
-            fromFieldPath: Required
-        - fromFieldPath: metadata.name
-          toFieldPath: spec.resourceGroupSelector
-          policy:
-            fromFieldPath: Required
-        - fromFieldPath: metadata.name
-          toFieldPath: spec.vnetSelector
-          policy:
-            fromFieldPath: Required
     - name: virtualnetwork-peering
       base:
         apiVersion: network.azure.upbound.io/v1beta1

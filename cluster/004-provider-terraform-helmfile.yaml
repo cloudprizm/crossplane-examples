@@ -37,7 +37,7 @@ releases:
                 source: Secret
                 secretRef:
                   namespace: crossplane-system
-                  name: resource-creator
+                  name: azure-creator
                   key: credentials
             configuration: |-
               terraform {

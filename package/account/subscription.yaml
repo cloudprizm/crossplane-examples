@@ -21,17 +21,17 @@ spec:
             source: Secret
             secretRef:
               namespace: crossplane-system
-              name: resource-creator
+              name: azure-creator
               key: credentials
           subscriptionID:  # patched
       readinessChecks:
         - type: None
       patches:
-        - fromFieldPath: spec.accountID
+        - fromFieldPath: spec.subscriptionID
           toFieldPath: metadata.name
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.accountID
+        - fromFieldPath: spec.subscriptionID
           toFieldPath: spec.subscriptionID
           policy:
             fromFieldPath: Required
@@ -47,7 +47,7 @@ spec:
           providerConfigRef:
             name:  # patched
       patches:
-        - fromFieldPath: spec.accountID
+        - fromFieldPath: spec.subscriptionID
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required
@@ -63,7 +63,7 @@ spec:
           providerConfigRef:
             name:  # patched
       patches:
-        - fromFieldPath: spec.accountID
+        - fromFieldPath: spec.subscriptionID
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required

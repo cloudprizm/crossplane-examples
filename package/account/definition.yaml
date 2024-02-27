@@ -26,8 +26,8 @@ spec:
             spec:
               type: object
               properties:
-                accountID:
-                  description: 'Account Id of subscription/AWS account'
+                subscriptionID:
+                  description: 'Id of subscription'
                   type: string
                 accountType:
                   description: 'Account Type Possible values: standard, premium, enterprise'
@@ -39,9 +39,9 @@ spec:
             status:
               type: object
               properties:
-                accountID:
+                subscriptionID:
                   type: string
-                  description: 'Subscription/ AWS account ID'
+                  description: 'Subscription ID'
                 accountComposedName:
                   type: string
-                  description: 'Subscription/AWS account composed name'
+                  description: 'Subscription composed name'

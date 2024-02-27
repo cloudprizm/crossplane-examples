@@ -27,11 +27,11 @@ spec:
               type: object
               required:
                 - rgpName
-                - accountId
+                - subscriptionID
               properties:
                 rgpName:
                   description: 'Name of resource group in which database will be created'
                   type: string
-                accountId:
-                  description: 'AccountId: Id of the Subscription/AWS account'
+                subscriptionID:
+                  description: 'subscriptionID: Id of the Subscription'
                   type: string

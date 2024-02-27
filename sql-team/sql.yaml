@@ -12,7 +12,7 @@ spec:
   patchSets:
     - name: provider-config
       patches:
-        - fromFieldPath: spec.accountId
+        - fromFieldPath: spec.subscriptionID
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required

@@ -4,7 +4,7 @@ kind: Account
 metadata:
   name: test-account
 spec:
-  accountID: fbdcbf8e-aaa1-4275-b745-f2812fb3d4f5
+  subscriptionID: fbdcbf8e-aaa1-4275-b745-f2812fb3d4f5
   compositionSelector:
     matchLabels:
       demo.io/cloud-provider: azure

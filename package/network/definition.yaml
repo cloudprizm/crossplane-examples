@@ -29,26 +29,25 @@ spec:
                 - networkName
                 - cloudRegion
                 - subnets
-                - accountId
+                - subscriptionID
                 - peerNetworkName
               properties:
-                accountId:
-                  description: 'AccountId: Id of the Subscription/AWS account'
+                subscriptionID:
+                  description: 'subscriptionID: Id of the Subscription'
                   type: string
                 networkName:
-                  description: 'NetworkName: will be used to create names of your resources'
+                  description: 'networkName: will be used to create names of your resources'
                   type: string
                 peerNetworkName:
                   description: 'peerNetworkName: name of network to which your network will be peered'
                   type: string
                 cloudRegion:
-                  description: 'CloudRegion: one of Azure/AWS regions possible values
+                  description: 'CloudRegion: one of Azure regions possible values
                     values: "germanywestcentral" "westeurope"'
                   type: string
                   enum:
                     - germanywestcentral
                     - westeurope
-                    - eu-central-1
                 subnets:
                   description: 'Subnets cidrs'
                   type: array

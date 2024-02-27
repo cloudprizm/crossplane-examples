@@ -4,8 +4,8 @@ kind: Sql
 metadata:
   name: example-msql
 spec:
-  accountId: fbdcbf8e-aaa1-4275-b745-f2812fb3d4f5
-  rgpName: test-network-wpcvn
+  subscriptionID: fbdcbf8e-aaa1-4275-b745-f2812fb3d4f5
+  rgpName: test-network-ftrgk
   compositionSelector:
     matchLabels:
       demo.io/cloud-provider: azure

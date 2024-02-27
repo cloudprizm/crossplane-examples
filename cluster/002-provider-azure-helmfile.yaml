@@ -64,15 +64,15 @@ releases:
         - apiVersion: v1
           kind: Secret
           metadata:
-            name: resource-creator
+            name: azure-creator
           type: Opaque
           stringData:
             "credentials": |-
               {
-               "clientId": {{ .Values.resourceCreator.clientId | quote }},
-               "clientSecret": {{ .Values.resourceCreator.clientSecret | quote }},
-               "tenantId": {{ .Values.resourceCreator.tenantId | quote }},
-               "subscriptionId": {{ .Values.resourceCreator.subscriptionId | quote }}
+               "clientId": {{ .Values.azureSecret.clientId | quote }},
+               "clientSecret": {{ .Values.azureSecret.clientSecret | quote }},
+               "tenantId": {{ .Values.azureSecret.tenantId | quote }},
+               "subscriptionId": {{ .Values.azureSecret.subscriptionId | quote }}
               }
 
         - apiVersion: v1

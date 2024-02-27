@@ -12,7 +12,7 @@ spec:
   patchSets:
     - name: provider-config
       patches:
-        - fromFieldPath: spec.accountId
+        - fromFieldPath: spec.subscriptionID
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required
@@ -131,7 +131,7 @@ spec:
               - source: SecretKey
                 secretKeyRef:
                   namespace: crossplane-system
-                  name: resource-creator
+                  name: azure-creator
                   key: credentials
                 format: JSON
           providerConfigRef:
@@ -204,7 +204,7 @@ spec:
           toFieldPath: spec.cidrs
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.accountId
+        - fromFieldPath: spec.subscriptionID
           toFieldPath: spec.subscriptionId
           policy:
             fromFieldPath: Required

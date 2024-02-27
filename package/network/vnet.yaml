@@ -84,6 +84,54 @@ spec:
         - type: ToCompositeFieldPath
           fromFieldPath: metadata.annotations[crossplane.io/external-name]
           toFieldPath: status.rgpName
+    - name: virtual-network
+      base:
+        apiVersion: network.azure.upbound.io/v1beta1
+        kind: VirtualNetwork
+        metadata:
+          name:  # patched
+          labels:
+            demo.io/virtualnetwork-selector:  # patched
+          annotations:
+            crossplane.io/external-name:  # patched
+        spec:
+          forProvider:
+            location:  # patched
+            addressSpace:  # patched
+            resourceGroupNameSelector:
+              matchLabels:
+                demo.io/resource-group-selector:  # patched
+        providerConfigRef:
+          name:  # patched
+      patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.networkName
+              - fromFieldPath: metadata.annotations[cloudRegionShort]
+            strategy: string
+            string: # net-vnetn-germanywestcentral
+              fmt: net-%s-%s
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
+          policy:
+            fromFieldPath: Required
+        - type: PatchSet
+          patchSetName: provider-config
+        - type: PatchSet
+          patchSetName: location
+        - fromFieldPath: spec.subnets
+          toFieldPath: spec.forProvider.addressSpace
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.forProvider.resourceGroupNameSelector.matchLabels[demo.io/resource-group-selector]
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.labels[demo.io/virtualnetwork-selector]  # vnet_name label
+          policy:
+            fromFieldPath: Required
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.id
+          toFieldPath: status.vnetId
     - name: peering
       base:
         apiVersion: tf.upbound.io/v1beta1
@@ -142,54 +190,6 @@ spec:
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.outputs.peerVnetId
           toFieldPath: status.peerVnetId
-    - name: virtual-network
-      base:
-        apiVersion: network.azure.upbound.io/v1beta1
-        kind: VirtualNetwork
-        metadata:
-          name:  # patched
-          labels:
-            demo.io/virtualnetwork-selector:  # patched
-          annotations:
-            crossplane.io/external-name:  # patched
-        spec:
-          forProvider:
-            location:  # patched
-            addressSpace:  # patched
-            resourceGroupNameSelector:
-              matchLabels:
-                demo.io/resource-group-selector:  # patched
-        providerConfigRef:
-          name:  # patched
-      patches:
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.networkName
-              - fromFieldPath: metadata.annotations[cloudRegionShort]
-            strategy: string
-            string: # net-vnetn-germanywestcentral
-              fmt: net-%s-%s
-          toFieldPath: metadata.annotations[crossplane.io/external-name]
-          policy:
-            fromFieldPath: Required
-        - type: PatchSet
-          patchSetName: provider-config
-        - type: PatchSet
-          patchSetName: location
-        - fromFieldPath: spec.subnets
-          toFieldPath: spec.forProvider.addressSpace
-        - fromFieldPath: metadata.name
-          toFieldPath: spec.forProvider.resourceGroupNameSelector.matchLabels[demo.io/resource-group-selector]
-          policy:
-            fromFieldPath: Required
-        - fromFieldPath: metadata.name
-          toFieldPath: metadata.labels[demo.io/virtualnetwork-selector]  # vnet_name label
-          policy:
-            fromFieldPath: Required
-        - type: ToCompositeFieldPath
-          fromFieldPath: status.atProvider.id
-          toFieldPath: status.vnetId
     - name: subnets
       base:
         apiVersion: demo.io/v1alpha1

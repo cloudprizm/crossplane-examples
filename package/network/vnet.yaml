@@ -24,7 +24,7 @@ spec:
               - fromFieldPath: spec.networkName
               - fromFieldPath: spec.cloudRegion
             strategy: string
-            string: # net-vnetn-germanywestcentral
+            string: # net-vnetn-gwc1
               fmt: net-%s-%s
           toFieldPath: metadata.annotations[crossplane.io/external-name]
           policy:

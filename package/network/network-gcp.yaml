@@ -100,7 +100,6 @@ spec:
         spec:
           cidrs:  # patched
           accountID:  # patched
-          resourceGroupSelector:  # patched
           vnetSelector:  # patched
           compositionSelector:
             matchLabels:
@@ -158,8 +157,8 @@ spec:
                 name = local.vpc_name
               }
               
-              output "peerVpcId" {
-                value = data.google_compute_network.sharedNetwork.id
+              output "peerVpcLink" {
+                value = data.google_compute_network.sharedNetwork.self_link
               }
 
           providerConfigRef:
@@ -174,5 +173,29 @@ spec:
           policy:
             fromFieldPath: Required
         - type: ToCompositeFieldPath
-          fromFieldPath: status.atProvider.outputs.peerVpcId
+          fromFieldPath: status.atProvider.outputs.peerVpcLink
           toFieldPath: status.peerVnetId
+    - name: vpc-peering
+      base:
+        apiVersion: compute.gcp.upbound.io/v1beta1
+        kind: NetworkPeering
+        metadata:
+          name:  # patched
+        spec:
+          forProvider:
+            networkSelector:
+              matchLabels:
+                demo.io/network-selector:  # patched
+            peerNetwork:  # patched
+      patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.forProvider.networkSelector.matchLabels[demo.io/network-selector]
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: status.peerVnetId
+          toFieldPath: spec.forProvider.peerNetwork
+          policy:
+            fromFieldPath: Required
+        - type: PatchSet
+          patchSetName: provider-config
+

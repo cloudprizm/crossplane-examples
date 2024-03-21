@@ -26,7 +26,7 @@ spec:
             spec:
               type: object
               properties:
-                subscriptionID:
+                accountID:
                   description: 'Id of subscription'
                   type: string
                 accountType:
@@ -39,7 +39,7 @@ spec:
             status:
               type: object
               properties:
-                subscriptionID:
+                accountID:
                   type: string
                   description: 'Subscription ID'
                 accountComposedName:

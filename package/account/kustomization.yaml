@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - definition.yaml
   - subscription.yaml
+  - project.yaml

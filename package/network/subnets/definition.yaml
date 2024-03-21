@@ -27,21 +27,25 @@ spec:
               type: object
               required:
                 - cidrs
-                - subscriptionId
-                - resourceGroupSelector
-                - vnetSelector
+                - accountID
+                - networkSelector
               properties:
                 cidrs:
                   description: 'cidrs: Subnets cidrs'
                   type: array
                   items:
                     type: string
-                subscriptionId:
+                cloudRegion:
+                  description: 'cloudRegion: Subnets region'
+                  type: string
+                  enum:
+                    - us-west2
+                accountID:
                   description: 'subscriptionId: Subnets subscription Id '
                   type: string
                 resourceGroupSelector:
                   description: 'resourceGroupSelector: Subnets selector for resource group'
                   type: string
-                vnetSelector:
+                networkSelector:
                   description: 'subscriptionId: Subnets selector for vnet '
                   type: string

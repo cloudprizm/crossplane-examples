@@ -11,7 +11,7 @@ spec:
     kind: XAccount
   resources:
 # Example from:
-# https://marketplace.upbound.io/providers/upbound/provider-azure/v0.42.1/resources/azure.upbound.io/Subscription/v1beta1
+# "https://marketplace.upbound.io/providers/upbound/provider-azure/v0.42.1/resources/azure.upbound.io/Subscription/v1beta1"
 #    - name: subscription
 #      base:
 #        apiVersion: azure.upbound.io/v1beta1
@@ -44,11 +44,11 @@ spec:
       readinessChecks:
         - type: None
       patches:
-        - fromFieldPath: spec.subscriptionID
+        - fromFieldPath: spec.accountID
           toFieldPath: metadata.name
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.subscriptionID
+        - fromFieldPath: spec.accountID
           toFieldPath: spec.subscriptionID
           policy:
             fromFieldPath: Required
@@ -64,7 +64,7 @@ spec:
           providerConfigRef:
             name:  # patched
       patches:
-        - fromFieldPath: spec.subscriptionID
+        - fromFieldPath: spec.accountID
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required
@@ -80,7 +80,7 @@ spec:
           providerConfigRef:
             name:  # patched
       patches:
-        - fromFieldPath: spec.subscriptionID
+        - fromFieldPath: spec.accountID
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required

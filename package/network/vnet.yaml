@@ -12,7 +12,7 @@ spec:
   patchSets:
     - name: provider-config
       patches:
-        - fromFieldPath: spec.subscriptionID
+        - fromFieldPath: spec.accountID
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required
@@ -132,6 +132,7 @@ spec:
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.id
           toFieldPath: status.vnetId
+
     - name: subnets
       base:
         apiVersion: demo.io/v1alpha1
@@ -146,7 +147,7 @@ spec:
           toFieldPath: spec.cidrs
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.subscriptionID
+        - fromFieldPath: spec.accountID
           toFieldPath: spec.subscriptionId
           policy:
             fromFieldPath: Required
@@ -155,7 +156,7 @@ spec:
           policy:
             fromFieldPath: Required
         - fromFieldPath: metadata.name
-          toFieldPath: spec.vnetSelector
+          toFieldPath: spec.networkSelector
           policy:
             fromFieldPath: Required
     - name: peering

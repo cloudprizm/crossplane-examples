@@ -2,7 +2,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xsubnets.demo.io
+  name: xsubnetworks.demo.io
   labels:
     demo.io/cloud-provider: gcp
 spec:
@@ -25,25 +25,22 @@ spec:
             {{- $accountID := index .observed.composite.resource.spec.accountID }}
 
             {{- range $cidr := .observed.composite.resource.spec.cidrs }}
-            {{- $subnetName := printf "%s-%s" $metadataName $cidr | replace "/" "-" }}
+            {{- $subnetName := printf "%s-%s" $metadataName $cidr | replace "/" "-" | replace "." "-" }}
             
             ---
-            apiVersion: network.azure.upbound.io/v1beta1
-            kind: Subnet
+            apiVersion: compute.gcp.upbound.io/v1beta1
+            kind: Subnetwork
             metadata:
               name: {{ $subnetName }}
               annotations:  
                 gotemplating.fn.crossplane.io/composition-resource-name: {{ $subnetName }}
             spec:
               forProvider:
-                addressPrefixes:
-                  - {{ $cidr }}
-                resourceGroupNameSelector:
+                ipCidrRange: {{ $cidr }}
+                region: {{ $.observed.composite.resource.spec.cloudRegion }}
+                networkSelector:
                   matchLabels:
-                    demo.io/resource-group-selector: {{ $.observed.composite.resource.spec.resourceGroupSelector }}
-                virtualNetworkNameSelector:
-                  matchLabels:
-                    demo.io/virtualnetwork-selector: {{ $.observed.composite.resource.spec.vnetSelector }}
+                    demo.io/network-selector: {{ $.observed.composite.resource.spec.networkSelector }}
               providerConfigRef:
                 name: {{ $accountID }}
             

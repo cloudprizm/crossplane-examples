@@ -29,11 +29,11 @@ spec:
                 - networkName
                 - cloudRegion
                 - subnets
-                - subscriptionID
+                - accountID
                 - peerNetworkName
               properties:
-                subscriptionID:
-                  description: 'subscriptionID: Id of the Subscription'
+                accountID:
+                  description: 'accountID: Id of the Subscription'
                   type: string
                 networkName:
                   description: 'networkName: will be used to create names of your resources'
@@ -48,6 +48,7 @@ spec:
                   enum:
                     - germanywestcentral
                     - westeurope
+                    - us-west2
                 subnets:
                   description: 'Subnets cidrs'
                   type: array

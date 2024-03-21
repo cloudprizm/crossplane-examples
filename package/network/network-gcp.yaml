@@ -1,0 +1,123 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xgcpnetworks.demo.io
+  labels:
+    demo.io/cloud-provider: gcp
+spec:
+  compositeTypeRef:
+    apiVersion: demo.io/v1alpha1
+    kind: XNetwork
+  patchSets:
+    - name: provider-config
+      patches:
+        - fromFieldPath: spec.accountID
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+            fromFieldPath: Required
+    - name: net-name
+      patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.networkName
+              - fromFieldPath: spec.cloudRegion
+            strategy: string
+            string: # net-vnetn-uw2
+              fmt: net-%s-%s
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
+          policy:
+            fromFieldPath: Required
+    - name: location
+      patches:
+        - fromFieldPath: spec.cloudRegion
+          toFieldPath: spec.forProvider.location
+          policy:
+            fromFieldPath: Required
+  resources:
+    - name: network-naming
+      base:
+        apiVersion: apiextensions.crossplane.io/v1alpha1
+        kind: EnvironmentConfig
+        metadata:
+          name:  # patched
+        data:
+          cloudRegion:  # patched
+      readinessChecks:
+        - type: None
+      patches:
+        - fromFieldPath: spec.cloudRegion
+          toFieldPath: data.cloudRegion
+          transforms:
+            - type: map
+              map:
+                us-west2: uw2
+        - type: ToCompositeFieldPath
+          fromFieldPath: data.cloudRegion
+          toFieldPath: metadata.annotations[cloudRegionShort]
+
+    - name: network
+      base:
+        apiVersion: compute.gcp.upbound.io/v1beta1
+        kind: Network
+        metadata:
+          name:  # patched
+          labels:
+            demo.io/network-selector:  # patched
+          annotations:
+            crossplane.io/external-name:  # patched
+        spec:
+          forProvider:
+            autoCreateSubnetworks: false
+            routingMode: REGIONAL
+          providerConfigRef:
+            name:  # patched
+      patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.networkName
+              - fromFieldPath: metadata.annotations[cloudRegionShort]
+            strategy: string
+            string: # net-vnetn-uswest2
+              fmt: net-%s-%s
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.labels[demo.io/network-selector]  # vnet_name label
+          policy:
+            fromFieldPath: Required
+        - type: PatchSet
+          patchSetName: provider-config
+
+    - name: subnets
+      base:
+        apiVersion: demo.io/v1alpha1
+        kind: XSubnet
+        spec:
+          cidrs:  # patched
+          accountID:  # patched
+          resourceGroupSelector:  # patched
+          vnetSelector:  # patched
+          compositionSelector:
+            matchLabels:
+              demo.io/cloud-provider: gcp
+      patches:
+        - fromFieldPath: spec.subnets
+          toFieldPath: spec.cidrs
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: spec.cloudRegion
+          toFieldPath: spec.cloudRegion
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: spec.accountID
+          toFieldPath: spec.accountID
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.networkSelector
+          policy:
+            fromFieldPath: Required

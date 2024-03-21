@@ -1,0 +1,83 @@
+releases:
+  - name: crossplane-provider-gcp
+    chart: incubator/raw
+    wait: true
+    values:
+      - resources:
+        - apiVersion: pkg.crossplane.io/v1
+          kind: Provider
+          metadata:
+            name: provider-family-gcp
+          spec:
+            package: xpkg.upbound.io/upbound/provider-family-gcp:v1.0.0
+
+  - name: crossplane-provider-gcp-sql
+    chart: incubator/raw
+    wait: true
+    values:
+      - resources:
+        - apiVersion: pkg.crossplane.io/v1
+          kind: Provider
+          metadata:
+            name: provider-gcp-sql
+          spec:
+            package: xpkg.upbound.io/upbound/provider-gcp-sql:v1.0.0
+
+  - name: crossplane-provider-gcp-network
+    chart: incubator/raw
+    wait: true
+    hooks:
+      - events: [ "postsync", "postapply" ]
+        command: "kubectl"
+        args:
+          [
+            "wait",
+            "providers.pkg.crossplane.io/provider-family-gcp",
+            "--for=condition=Healthy",
+            "--timeout=180s",
+          ]
+    values:
+      - resources:
+        - apiVersion: pkg.crossplane.io/v1
+          kind: Provider
+          metadata:
+            name: provider-gcp-compute
+          spec:
+            package: xpkg.upbound.io/upbound/provider-gcp-compute:v1.0.0
+
+  - name: provider-configs-azure
+    chart: incubator/raw
+    namespace: crossplane-system
+    wait: true
+    hooks:
+      - events: [ "postsync", "postapply" ]
+        command: "kubectl"
+        args:
+          [
+            "wait",
+            "providers.pkg.crossplane.io/provider-gcp-compute",
+            "--for=condition=Healthy",
+            "--timeout=180s",
+          ]
+    values:
+      - resources:
+        - apiVersion: v1
+          kind: Secret
+          metadata:
+            name: gcp-creator
+          type: Opaque
+          stringData:
+            "credentials": |-
+              {
+               "type": {{ .Values.GcpSecret.type | quote }},
+               "project_id": {{ .Values.GcpSecret.projectId | quote }},
+               "private_key_id": {{ .Values.GcpSecret.privateKeyId | quote }},
+               "private_key": {{ .Values.GcpSecret.privateKey | quote }},
+               "client_email": {{ .Values.GcpSecret.clientEmail | quote }},
+               "client_id": {{ .Values.GcpSecret.clientId | quote }},
+               "auth_uri": {{ .Values.GcpSecret.authUri | quote }},
+               "token_uri": {{ .Values.GcpSecret.tokenUri | quote }},
+               "auth_provider_x509_cert_url": {{ .Values.GcpSecret.authProviderX509CertUrl | quote }},
+               "client_x509_cert_url": {{ .Values.GcpSecret.clientX509CertUrl | quote }},
+               "universe_domain": {{ .Values.GcpSecret.universeDomain | quote }}
+              }

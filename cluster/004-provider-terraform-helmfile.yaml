@@ -56,3 +56,24 @@ releases:
                   }
                 }
               }
+
+        - apiVersion: tf.upbound.io/v1beta1
+          kind: ProviderConfig
+          metadata:
+            name: terraform-gcp
+          spec:
+            credentials:
+              - filename: gcp-credentials.json
+                source: Secret
+                secretRef:
+                  namespace: crossplane-system
+                  name: gcp-creator
+                  key: credentials
+            configuration: |-              
+              terraform {
+                backend "kubernetes" {
+                  secret_suffix     = "providerconfig-azure"
+                  namespace         = "crossplane-system"
+                  in_cluster_config = true
+                }
+              }

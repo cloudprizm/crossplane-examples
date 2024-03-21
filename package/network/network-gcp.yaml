@@ -53,6 +53,7 @@ spec:
             - type: map
               map:
                 us-west2: uw2
+                us-east1: ue1
         - type: ToCompositeFieldPath
           fromFieldPath: data.cloudRegion
           toFieldPath: metadata.annotations[cloudRegionShort]
@@ -121,3 +122,57 @@ spec:
           toFieldPath: spec.networkSelector
           policy:
             fromFieldPath: Required
+    - name: peering
+      base:
+        apiVersion: tf.upbound.io/v1beta1
+        kind: Workspace
+        metadata:
+          name:  # patched
+        spec:
+          forProvider:
+            vars:
+              - key: peerNetworkRegion
+                value:  # patched
+              - key: projectName
+                value:  # patched
+            source: Inline
+            module: |
+              variable "peerNetworkRegion" {}
+              
+              variable "projectName" {}
+              
+              provider "google" {
+                credentials = "gcp-credentials.json"
+                project     = var.projectName
+              }
+              
+              locals {
+                vpc_name = [for network in data.google_compute_networks.projectNetworks.networks : network if can(regex("shared-${var.peerNetworkRegion}", network))][0]
+              }
+              
+              data "google_compute_networks" "projectNetworks" {
+                project = var.projectName
+              }
+              
+              data "google_compute_network" "sharedNetwork" {
+                name = local.vpc_name
+              }
+              
+              output "peerVpcId" {
+                value = data.google_compute_network.sharedNetwork.id
+              }
+
+          providerConfigRef:
+            name: terraform-gcp
+      patches:
+        - fromFieldPath: metadata.annotations[cloudRegionShort]
+          toFieldPath: spec.forProvider.vars[0].value
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: spec.accountID
+          toFieldPath: spec.forProvider.vars[1].value
+          policy:
+            fromFieldPath: Required
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.outputs.peerVpcId
+          toFieldPath: status.peerVnetId

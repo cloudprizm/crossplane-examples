@@ -4,7 +4,7 @@ kind: Network
 metadata:
   name: test-gcp-network
 spec:
-  networkName: dafanet75
+  networkName: shared
   # If you don't have EA account you need to create subscription manually
   accountID: aerobic-factor-417108
   cloudRegion: us-west2
@@ -13,8 +13,8 @@ spec:
   # used Service Principal has access
   peerNetworkName: dafn1-uw2
   subnets:
-    - 44.115.88.176/28
-    - 44.115.89.176/28
+    - 44.115.90.176/28
+    - 44.115.91.176/28
   compositionSelector:
     matchLabels:
       demo.io/cloud-provider: gcp

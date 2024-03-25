@@ -2,9 +2,9 @@
 apiVersion: demo.io/v1alpha1
 kind: Network
 metadata:
-  name: test-gcp-network
+  name: cr-gcp-network
 spec:
-  networkName: shared
+  networkName: jan-m
   # If you don't have EA account you need to create subscription manually
   accountID: aerobic-factor-417108
   cloudRegion: us-west2

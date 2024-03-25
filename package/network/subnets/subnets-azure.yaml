@@ -4,7 +4,7 @@ kind: Composition
 metadata:
   name: xsubnets.demo.io
   labels:
-    demo.io/cloud-provider: gcp
+    demo.io/cloud-provider: azure
 spec:
   compositeTypeRef:
     apiVersion: demo.io/v1alpha1

@@ -30,7 +30,6 @@ spec:
                 - cloudRegion
                 - subnets
                 - accountID
-                - peerNetworkName
               properties:
                 accountID:
                   description: 'accountID: Id of the Subscription'

@@ -5,13 +5,8 @@ metadata:
   name: cr-gcp-network
 spec:
   networkName: jan-m
-  # If you don't have EA account you need to create subscription manually
   accountID: aerobic-factor-417108
   cloudRegion: us-west2
-  # In this example we are creating peering to Vnet with this name
-  # This Vnet can be created in one of the subscriptions To which
-  # used Service Principal has access
-  peerNetworkName: dafn1-uw2
   subnets:
     - 44.115.90.176/28
     - 44.115.91.176/28

@@ -4,7 +4,6 @@ kind: Account
 metadata:
   name: test-gcp-account
 spec:
-  # If you don't have EA account you need to create subscription manually
   accountID: aerobic-factor-417108
   compositionSelector:
     matchLabels:

@@ -16,19 +16,6 @@ spec:
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required
-    - name: net-name
-      patches:
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.networkName
-              - fromFieldPath: spec.cloudRegion
-            strategy: string
-            string: # net-vnetn-uw2
-              fmt: net-%s-%s
-          toFieldPath: metadata.annotations[crossplane.io/external-name]
-          policy:
-            fromFieldPath: Required
     - name: location
       patches:
         - fromFieldPath: spec.cloudRegion
@@ -57,7 +44,6 @@ spec:
         - type: ToCompositeFieldPath
           fromFieldPath: data.cloudRegion
           toFieldPath: metadata.annotations[cloudRegionShort]
-
     - name: network
       base:
         apiVersion: compute.gcp.upbound.io/v1beta1

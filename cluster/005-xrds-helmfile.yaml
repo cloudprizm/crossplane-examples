@@ -6,4 +6,4 @@ releases:
     chart: ../package/network
 
   - name: demo-sql
-    chart: ../sql-team
+    chart: ../package/sql-team

@@ -32,7 +32,7 @@ spec:
                 - accountID
               properties:
                 accountID:
-                  description: 'accountID: Id of the Subscription'
+                  description: 'accountID: Id of the subscription/project'
                   type: string
                 networkName:
                   description: 'networkName: will be used to create names of your resources'

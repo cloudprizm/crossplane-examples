@@ -41,11 +41,11 @@ spec:
                   enum:
                     - us-west2
                 accountID:
-                  description: 'subscriptionId: Subnets subscription Id '
+                  description: 'subscription Id/project Id for subnets'
                   type: string
                 resourceGroupSelector:
                   description: 'resourceGroupSelector: Subnets selector for resource group'
                   type: string
                 networkSelector:
-                  description: 'subscriptionId: Subnets selector for vnet '
+                  description: 'networkSelector: Subnets selector for Virtual Network '
                   type: string

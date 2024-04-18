@@ -45,7 +45,7 @@ releases:
           spec:
             package: xpkg.upbound.io/upbound/provider-gcp-compute:v1.0.0
 
-  - name: provider-configs-azure
+  - name: provider-configs-gcp
     chart: incubator/raw
     namespace: crossplane-system
     wait: true

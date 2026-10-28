@@ -95,6 +95,23 @@ Przetestowane też (na atrapie serwera, `tests/stub_llm.py`):
 - opisy typu „order rgp and vnet for better look” są za słabe na polecenie — dla prawdziwych danych włącz `rewriter`,
 - 16 przykładów to za mało na trening; minimum to ok. 100–200 PR-ów.
 
+## Testy
+
+```bash
+pip install pytest
+pytest -q                 # 36 testów, ok. 15 s
+pytest -q -m "not slow"   # bez testu czekania na rate limit
+```
+
+Testy nie potrzebują sieci, modelu ani GitHuba: atrapa API GitHuba (paginacja, diffy, komentarze, rate limit, wznawianie), atrapa serwera LLM (`tests/stub_llm.py`) i atrapa `crossplane` CLI. Pokrywają:
+
+- `fetch_prs.py` — dwie strony PR-ów, pomijanie niezmergowanych, token w nagłówku, wznawianie bez ponownego pobierania diffów, `max_prs`, czekanie na rate limit,
+- `history_to_raw.py` i `build_dataset.py` — filtrowanie ścieżek, za duże PR-y, reverty, uwagi z review, przepisywanie słabych opisów, pusty wynik,
+- `context/` — mapa repo (XRD, claimy, pipeline, zasoby, sygnatury wielolinijkowe, budżet, zepsute pliki), wyszukiwanie, XRD z pętlą poprawek walidatora, narzędzia agenta (w tym blokada ścieżek spoza repo), plan zadania, cache streszczeń,
+- `bench_context.py`, składnia skryptów powłoki i konfiguracji.
+
+Testy znalazły i poprawiły dwa błędy: mapa repo brała pola z pierwszej wersji XRD zamiast z wersji `referenceable`, a wielolinijkowe sygnatury Go i Pythona (z adnotacjami typów) były ucinane.
+
 ## Serwowanie dla zespołu (EC2)
 
 `serving/vllm.sh` — vLLM zamiast Ollamy (continuous batching, prefix caching dla stałej mapy repo, API zgodne z OpenAI). Szacunki, nie pomiary:

@@ -9,19 +9,19 @@ import os
 
 import requests
 
-URL = os.environ.get("LLM_URL", "http://localhost:8000/v1")
-MODEL = os.environ.get("LLM_MODEL", "local")
-API_KEY = os.environ.get("LLM_API_KEY", "none")
+def _env(name, default):
+    # czytane przy każdym wywołaniu, żeby zmiana zmiennej działała bez restartu procesu
+    return os.environ.get(name, default)
 
 
 def chat(messages, tools=None, url=None, model=None, temperature=0.2, timeout=300):
     """Zwraca cały obiekt message z odpowiedzi (z ewentualnymi tool_calls)."""
-    body = {"model": model or MODEL, "messages": messages, "temperature": temperature}
+    body = {"model": model or _env("LLM_MODEL", "local"), "messages": messages, "temperature": temperature}
     if tools:
         body["tools"] = tools
     r = requests.post(
-        f"{(url or URL).rstrip('/')}/chat/completions",
-        headers={"Authorization": f"Bearer {API_KEY}"},
+        f"{(url or _env('LLM_URL', 'http://localhost:8000/v1')).rstrip('/')}/chat/completions",
+        headers={"Authorization": f"Bearer {_env('LLM_API_KEY', 'none')}"},
         json=body,
         timeout=timeout,
     )

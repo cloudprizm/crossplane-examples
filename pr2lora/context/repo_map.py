@@ -16,7 +16,13 @@ from . import signatures as ts
 SKIP_DIRS = {".git", "node_modules", "vendor", ".venv", "__pycache__", ".context"}
 YAML_EXT = {".yaml", ".yml"}
 CODE_EXT = {".py", ".go", ".ts"}
-SIG = re.compile(r"^\s*(def |class |func )\s*([^{:\n]+)", re.M)
+SIG_START = re.compile(r"^(\s*)(async def |def |class |func )", re.M)
+
+
+def referenceable_version(spec):
+    """Wersja XRD, z której Crossplane tworzy zasoby (referenceable), inaczej pierwsza."""
+    vers = spec.get("versions") or [{}]
+    return next((v for v in vers if v.get("referenceable")), vers[0])
 
 
 def iter_files(root):
@@ -52,8 +58,7 @@ def yaml_summary(path):
         if kind == "CompositeResourceDefinition":
             names = spec.get("names") or {}
             claim = (spec.get("claimNames") or {}).get("kind")
-            vers = spec.get("versions") or [{}]
-            schema = ((vers[0].get("schema") or {}).get("openAPIV3Schema") or {})
+            schema = ((referenceable_version(spec).get("schema") or {}).get("openAPIV3Schema") or {})
             fields = _props((schema.get("properties") or {}).get("spec"))
             line += f" xr={names.get('kind')}" + (f" claim={claim}" if claim else "")
             if fields:
@@ -72,8 +77,29 @@ def yaml_summary(path):
     return out
 
 
-def regex_signatures(path):
-    return [f"  {a.strip()} {b.strip()}" for a, b in SIG.findall(path.read_text(errors="ignore"))]
+def regex_signatures(path, max_lines=6):
+    """Sygnatury bez tree-sittera: od def/class/func do początku ciała.
+
+    Go/TS: do pierwszego `{`; Python: do `:` kończącego linię (adnotacje typów w środku nie ucinają).
+    Obsługuje sygnatury na kilka linii. Metody w klasach dostają wcięcie.
+    """
+    text = path.read_text(errors="ignore")
+    out = []
+    for m in SIG_START.finditer(text):
+        chunk = text[m.start(2):].split("\n", max_lines)[:max_lines]
+        sig = []
+        for line in chunk:
+            if path.suffix == ".py":
+                if line.rstrip().endswith(":"):
+                    sig.append(line.rstrip()[:-1])
+                    break
+            elif "{" in line:
+                sig.append(line.split("{", 1)[0])
+                break
+            sig.append(line)
+        indent = "  " * (1 + len(m.group(1).expandtabs(4)) // 4)
+        out.append(indent + " ".join(" ".join(sig).split()))
+    return out
 
 
 def repo_map(root, max_chars=8000, use_tree_sitter=None):

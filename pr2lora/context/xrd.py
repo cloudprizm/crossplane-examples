@@ -12,7 +12,7 @@ import tempfile
 
 import yaml
 
-from .repo_map import YAML_EXT, iter_files
+from .repo_map import YAML_EXT, iter_files, referenceable_version
 
 
 def all_xrds(root):
@@ -38,8 +38,7 @@ def find_xrd(root, kind):
 
 
 def schema_text(doc):
-    vers = doc["spec"]["versions"]
-    v = next((v for v in vers if v.get("referenceable")), vers[0])
+    v = referenceable_version(doc["spec"])
     return yaml.safe_dump(v["schema"]["openAPIV3Schema"], sort_keys=False)
 
 

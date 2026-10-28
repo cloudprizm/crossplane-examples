@@ -1,0 +1,7 @@
+data/
+adapters/
+models/
+.context/
+__pycache__/
+*.pyc
+.venv/

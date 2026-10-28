@@ -1,0 +1,8 @@
+requests>=2.31
+pyyaml>=6.0
+numpy>=1.26
+scikit-learn>=1.4          # wyszukiwanie TF-IDF (działa offline)
+mlx-lm>=0.19; sys_platform == "darwin"   # trening LoRA na Macu
+# opcjonalnie, lepsza jakość:
+# sentence-transformers>=3.0      # wyszukiwanie semantyczne (embeddingi)
+# tree-sitter tree-sitter-language-pack   # pełne sygnatury w mapie repo

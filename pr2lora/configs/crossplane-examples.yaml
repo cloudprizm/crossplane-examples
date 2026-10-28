@@ -1,0 +1,15 @@
+# Przykład dla github.com - repo użyte do testów w tym projekcie.
+api_url: https://api.github.com
+repo: cloudprizm/crossplane-examples
+token_env: GITHUB_TOKEN
+max_prs: 200
+paths_include: ["package/", "examples/", "cluster/", ".yaml"]
+max_diff_chars: 24000
+min_desc_chars: 40
+rewriter:
+  enabled: false
+  base_url: http://localhost:8000/v1
+  model: Qwen/Qwen2.5-Coder-32B-Instruct-AWQ
+  api_key_env: REWRITER_API_KEY
+base_model: mlx-community/Qwen2.5-Coder-7B-Instruct-4bit
+valid_ratio: 0.1
